@@ -1,13 +1,8 @@
-name = "nexusai"
-
+name = "nexusaidcbot"
 main = "index.js"
-
 compatibility_date = "2025-01-01"
 
 [[d1_databases]]
-
 binding = "DB"
-
 database_name = "nexusai"
-
 database_id = "DEINE_DATABASE_ID"
