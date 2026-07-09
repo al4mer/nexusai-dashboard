@@ -1,4 +1,4 @@
-const worker = "https://DEIN-WORKER.workers.dev";
+const worker = "https://nexusaidcbot.alamer.workers.dev";
 
 const loginButton = document.getElementById("loginButton");
 
