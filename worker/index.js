@@ -13,7 +13,7 @@ export default {
       return new Response(null, { headers: cors });
     }
 
-    // Hilfsfunktionen
+    // JSON helper
     const json = (data, status = 200) =>
       new Response(JSON.stringify(data), {
         status,
@@ -22,9 +22,12 @@ export default {
 
     const unauthorized = () => json({ error: "Unauthorized" }, 401);
 
-    // Simple JWT (HMAC)
+    // JWT helpers
     const encodeBase64 = (obj) =>
-      btoa(JSON.stringify(obj)).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+      btoa(JSON.stringify(obj))
+        .replace(/=/g, "")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_");
 
     const sign = async (data, secret) => {
       const key = await crypto.subtle.importKey(
@@ -44,7 +47,9 @@ export default {
     const verify = async (token, secret) => {
       const [h, p, s] = token.split(".");
       if (!h || !p || !s) return null;
+
       const data = `${h}.${p}`;
+
       const key = await crypto.subtle.importKey(
         "raw",
         new TextEncoder().encode(secret),
@@ -52,17 +57,21 @@ export default {
         false,
         ["verify"]
       );
+
       const sigBytes = Uint8Array.from(
         atob(s.replace(/-/g, "+").replace(/_/g, "/")),
         (c) => c.charCodeAt(0)
       );
+
       const ok = await crypto.subtle.verify(
         "HMAC",
         key,
         sigBytes,
         new TextEncoder().encode(data)
       );
+
       if (!ok) return null;
+
       return JSON.parse(atob(p.replace(/-/g, "+").replace(/_/g, "/")));
     };
 
@@ -73,7 +82,7 @@ export default {
       return await verify(token, env.JWT_SECRET);
     };
 
-    // Discord Login
+    // LOGIN
     if (url.pathname === "/login") {
       const discord =
         "https://discord.com/oauth2/authorize" +
@@ -85,8 +94,9 @@ export default {
       return Response.redirect(discord, 302);
     }
 
-    // Discord Callback
-    if (url.pathname === "/callback") {
+    // CALLBACK (Fix: callback.html wird akzeptiert)
+    if (url.pathname === "/callback" || url.pathname === "/callback.html") {
+
       const code = url.searchParams.get("code");
       if (!code) return new Response("Kein Code!", { status: 400, headers: cors });
 
@@ -110,6 +120,7 @@ export default {
       const userRes = await fetch("https://discord.com/api/users/@me", {
         headers: { Authorization: `Bearer ${token.access_token}` }
       });
+
       const user = await userRes.json();
 
       // JWT bauen
@@ -126,20 +137,21 @@ export default {
       const s = await sign(`${h}.${p}`, env.JWT_SECRET);
       const jwt = `${h}.${p}.${s}`;
 
+      // Redirect zu servers.html
       const redirect = new URL(env.FRONTEND_URL + "/servers.html");
       redirect.searchParams.set("token", jwt);
 
       return Response.redirect(redirect.toString(), 302);
     }
 
-    // API: User
+    // API: USER
     if (url.pathname === "/api/user") {
       const user = await getAuthUser();
       if (!user) return unauthorized();
       return json({ user });
     }
 
-    // API: Guilds
+    // API: GUILDS
     if (url.pathname === "/api/guilds") {
       const user = await getAuthUser();
       if (!user) return unauthorized();
@@ -152,7 +164,7 @@ export default {
       return json({ guilds });
     }
 
-    // API: Channels
+    // API: CHANNELS
     if (url.pathname.startsWith("/api/guilds/") && url.pathname.endsWith("/channels")) {
       const user = await getAuthUser();
       if (!user) return unauthorized();
@@ -168,7 +180,7 @@ export default {
       return json({ channels });
     }
 
-    // SAVE (Settings, Personality, Keys)
+    // SAVE
     if (url.pathname === "/save" && request.method === "POST") {
       const user = await getAuthUser();
       if (!user) return unauthorized();
@@ -191,7 +203,7 @@ export default {
       return json({ ok: true });
     }
 
-    // LOAD (alle Einstellungen für guildId)
+    // LOAD
     if (url.pathname === "/load" && request.method === "GET") {
       const user = await getAuthUser();
       if (!user) return unauthorized();
