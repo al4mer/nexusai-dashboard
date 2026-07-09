@@ -50,6 +50,24 @@ async function load(){
 }
 
 load();
+async function user(){
+
+    const me =
+    await api("/api/user");
+
+    document.getElementById("user").innerHTML=`
+        👤 ${me.username}
+    `;
+
+}
+
+user();
+
+document.getElementById("logout").onclick=()=>{
+
+    location.href="index.html";
+
+};
 
 document.getElementById("save").onclick=async()=>{
 
@@ -76,3 +94,4 @@ document.getElementById("save").onclick=async()=>{
     alert("Gespeichert!");
 
 }
+
