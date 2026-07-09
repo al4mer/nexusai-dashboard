@@ -1,4 +1,4 @@
-const API = "https://DEIN-WORKER.workers.dev";
+const API = "https://nexusaidcbot.alamer.workers.dev";
 
 export async function api(path, options = {}) {
 
