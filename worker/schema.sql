@@ -1,13 +1,7 @@
-CREATE TABLE settings (
+DROP TABLE IF EXISTS guild_settings;
 
-guild_id TEXT PRIMARY KEY,
-
-channel_id TEXT,
-
-language TEXT,
-
-personality TEXT,
-
-apikey TEXT
-
+CREATE TABLE guild_settings (
+    guild_id TEXT PRIMARY KEY,
+    data TEXT
 );
+
