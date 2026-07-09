@@ -1,77 +1,78 @@
-const worker = "https://DEIN-WORKER.workers.dev";
+import { api } from "./api.js";
 
 const guild =
 new URLSearchParams(location.search).get("guild");
 
-const channelSelect =
+const channel =
 document.getElementById("channelSelect");
 
-async function loadChannels(){
+const language =
+document.getElementById("language");
 
-const response = await fetch(
+const personality =
+document.getElementById("personality");
 
-worker+"/api/guilds/"+guild+"/channels",
+const apikey =
+document.getElementById("apikey");
 
-{
+async function load(){
 
-credentials:"include"
+    const channels =
+    await api("/api/guilds/"+guild+"/channels");
+
+    channel.innerHTML="";
+
+    channels.forEach(c=>{
+
+        channel.innerHTML+=`
+        <option value="${c.id}">
+            # ${c.name}
+        </option>
+        `;
+
+    });
+
+    const settings =
+    await api("/load?guild="+guild);
+
+    if(settings){
+
+        channel.value=settings.channel;
+
+        language.value=settings.language;
+
+        personality.value=settings.personality;
+
+        apikey.value=settings.apikey;
+
+    }
 
 }
 
-);
-
-const channels=await response.json();
-
-channelSelect.innerHTML="";
-
-channels.forEach(channel=>{
-
-const option=document.createElement("option");
-
-option.value=channel.id;
-
-option.textContent="# "+channel.name;
-
-channelSelect.appendChild(option);
-
-});
-
-}
-
-loadChannels();
+load();
 
 document.getElementById("save").onclick=async()=>{
 
-const settings={
+    await api("/save",{
 
-guild,
+        method:"POST",
 
-channel:channelSelect.value,
+        body:JSON.stringify({
 
-language:document.getElementById("language").value,
+            guild,
 
-personality:document.getElementById("personality").value,
+            channel:channel.value,
 
-apikey:document.getElementById("apikey").value
+            language:language.value,
 
-};
+            personality:personality.value,
 
-await fetch(worker+"/save",{
+            apikey:apikey.value
 
-method:"POST",
+        })
 
-headers:{
+    });
 
-"Content-Type":"application/json"
+    alert("Gespeichert!");
 
-},
-
-credentials:"include",
-
-body:JSON.stringify(settings)
-
-});
-
-alert("Gespeichert!");
-
-};
+}
