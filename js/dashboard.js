@@ -1,97 +1,75 @@
 import { api } from "./api.js";
 
-const guild =
-new URLSearchParams(location.search).get("guild");
+const guild = new URLSearchParams(location.search).get("guild");
 
-const channel =
-document.getElementById("channelSelect");
+const channel = document.getElementById("channelSelect");
+const language = document.getElementById("language");
+const personality = document.getElementById("personality");
+const apikey = document.getElementById("apikey");
 
-const language =
-document.getElementById("language");
+// CHANNELS + SETTINGS LADEN
+async function load() {
 
-const personality =
-document.getElementById("personality");
+    // Channels holen
+    const dataChannels = await api(`/api/guilds/${guild}/channels`);
+    const channels = dataChannels.channels;
 
-const apikey =
-document.getElementById("apikey");
+    channel.innerHTML = "";
 
-async function load(){
-
-    const channels =
-    await api("/api/guilds/"+guild+"/channels");
-
-    channel.innerHTML="";
-
-    channels.forEach(c=>{
-
-        channel.innerHTML+=`
-        <option value="${c.id}">
-            # ${c.name}
-        </option>
+    channels.forEach(c => {
+        channel.innerHTML += `
+            <option value="${c.id}">
+                # ${c.name}
+            </option>
         `;
-
     });
 
-    const settings =
-    await api("/load?guild="+guild);
+    // Settings holen
+    const settingsData = await api(`/load?guildId=${guild}`);
 
-    if(settings){
+    if (settingsData) {
 
-        channel.value=settings.channel;
+        if (settingsData.settings) {
+            channel.value = settingsData.settings.channel || "";
+            language.value = settingsData.settings.language || "";
+        }
 
-        language.value=settings.language;
-
-        personality.value=settings.personality;
-
-        apikey.value=settings.apikey;
-
+        personality.value = settingsData.personality || "";
+        apikey.value = settingsData.keys || "";
     }
-
 }
 
 load();
-async function user(){
 
-    const me =
-    await api("/api/user");
-
-    document.getElementById("user").innerHTML=`
-        👤 ${me.username}
-    `;
-
+// USER LADEN
+async function user() {
+    const me = await api("/api/user");
+    document.getElementById("user").innerHTML = `👤 ${me.user.username}`;
 }
 
 user();
 
-document.getElementById("logout").onclick=()=>{
-
-    location.href="index.html";
-
+// LOGOUT
+document.getElementById("logout").onclick = () => {
+    localStorage.removeItem("nexusai_token");
+    location.href = "index.html";
 };
 
-document.getElementById("save").onclick=async()=>{
+// SAVE
+document.getElementById("save").onclick = async () => {
 
-    await api("/save",{
-
-        method:"POST",
-
-        body:JSON.stringify({
-
-            guild,
-
-            channel:channel.value,
-
-            language:language.value,
-
-            personality:personality.value,
-
-            apikey:apikey.value
-
+    await api("/save", {
+        method: "POST",
+        body: JSON.stringify({
+            guildId: guild,
+            settings: {
+                channel: channel.value,
+                language: language.value
+            },
+            personality: personality.value,
+            keys: apikey.value
         })
-
     });
 
     alert("Gespeichert!");
-
-}
-
+};
