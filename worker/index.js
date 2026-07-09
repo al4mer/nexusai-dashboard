@@ -85,9 +85,8 @@ export default {
       return Response.redirect(discord, 302);
     }
 
-    // ⭐ FIX: callback.html wird jetzt erkannt
-    if (url.pathname === "/callback" || url.pathname === "/callback.html") {
-
+    // Discord Callback
+    if (url.pathname === "/callback") {
       const code = url.searchParams.get("code");
       if (!code) return new Response("Kein Code!", { status: 400, headers: cors });
 
@@ -169,7 +168,7 @@ export default {
       return json({ channels });
     }
 
-    // SAVE
+    // SAVE (Settings, Personality, Keys)
     if (url.pathname === "/save" && request.method === "POST") {
       const user = await getAuthUser();
       if (!user) return unauthorized();
@@ -192,7 +191,7 @@ export default {
       return json({ ok: true });
     }
 
-    // LOAD
+    // LOAD (alle Einstellungen für guildId)
     if (url.pathname === "/load" && request.method === "GET") {
       const user = await getAuthUser();
       if (!user) return unauthorized();
@@ -218,4 +217,3 @@ export default {
     });
   }
 }
-
