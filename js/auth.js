@@ -1,30 +1,20 @@
+// js/auth.js
+
 const worker = "https://nexusaidcbot.alamer.workers.dev";
 
+// Login Button
 const loginButton = document.getElementById("loginButton");
-
-if(loginButton){
-
-loginButton.onclick=()=>{
-
-window.location=worker+"/login";
-
-};
-
+if (loginButton) {
+    loginButton.onclick = () => {
+        window.location = worker + "/login";
+    };
 }
 
-if(location.pathname.includes("callback")){
+// Callback: Token aus URL holen
+const url = new URL(window.location.href);
+const token = url.searchParams.get("token");
 
-const code=new URLSearchParams(location.search).get("code");
-
-if(code){
-
-fetch(worker+"/callback?code="+code)
-
-.then(()=>{
-
-location.href="servers.html";
-
-});
-
-}
+if (token) {
+    localStorage.setItem("nexusai_token", token);
+    window.location.href = "servers.html";
 }
