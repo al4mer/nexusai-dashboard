@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusAI Dashboard</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <aside class="sidebar">
+
+        <h2>NexusAI</h2>
+
+        <button class="tab active">Dashboard</button>
+        <button class="tab">AI Channel</button>
+        <button class="tab">Personality</button>
+        <button class="tab">API Keys</button>
+        <button class="tab">Language</button>
+
+    </aside>
+
+    <main class="content">
+
+        <h1>Dashboard</h1>
+
+        <div class="card">
+
+            <h3>AI Channel</h3>
+
+            <select id="channelSelect">
+
+                <option>Lade Channels...</option>
+
+            </select>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Language</h3>
+
+            <select id="language">
+
+                <option>Deutsch</option>
+                <option>English</option>
+
+            </select>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Personality</h3>
+
+            <textarea id="personality" rows="8">
+
+Du bist NexusAI, freundlich und hilfsbereit.
+
+            </textarea>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Groq API Key</h3>
+
+            <input
+                id="apikey"
+                type="password"
+                placeholder="gsk_..."
+            >
+
+        </div>
+
+        <button id="save">
+            💾 Speichern
+        </button>
+
+    </main>
+
+</div>
+
+<script type="module" src="js/dashboard.js"></script>
+
+</body>
+</html>
